@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .bg-gradient-dark-blue {
+    background: linear-gradient(
+      135deg,
+      rgba(75, 85, 99, 1) 0%,
+      rgba(70, 130, 180, 1) 100%
+    );
+  }
+
+  .bg-gradient-green {
+    background: linear-gradient(
+      135deg,
+      rgba(43, 169, 64, 1) 0%,
+      rgba(34, 139, 34, 1) 100%
+    );
+  }
+
+  .bg-gradient-red {
+    background: linear-gradient(
+      135deg,
+      rgba(239, 68, 68, 1) 0%,
+      rgba(220, 38, 38, 1) 100%
+    );
+  }
+}
