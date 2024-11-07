@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const dailyTaskSchema = new mongoose.Schema(
   {
@@ -6,6 +6,7 @@ const dailyTaskSchema = new mongoose.Schema(
     description: { type: String },
     isCompleted: { type: Boolean, default: false },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    statusUpdatedAt: { type: Date },
   },
   { timestamps: true }
 );

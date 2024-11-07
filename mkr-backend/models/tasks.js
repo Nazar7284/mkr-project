@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Goal } from "./goal.js";
 
 const taskSchema = new mongoose.Schema(
   {
@@ -21,5 +22,23 @@ const taskSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+taskSchema.post("save", async function () {
+  if (this.goal) {
+    const goal = await Goal.findById(this.goal);
+    if (goal) {
+      await goal.calculateProgress();
+    }
+  }
+});
+
+taskSchema.post("remove", async function () {
+  if (this.goal) {
+    const goal = await Goal.findById(this.goal);
+    if (goal) {
+      await goal.calculateProgress();
+    }
+  }
+});
 
 export const Task = mongoose.model("Task", taskSchema);

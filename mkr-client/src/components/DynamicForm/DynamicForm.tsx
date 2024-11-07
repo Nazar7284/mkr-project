@@ -1,27 +1,27 @@
-// DynamicForm.tsx
-
 import React from "react";
-import { useForm, SubmitHandler, Control } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import { Button } from "@mui/material";
 import CustomInput from "../CustomInput/CustomInput";
 import MyBtn from "../Button";
 
-interface FieldConfig {
+export interface FieldConfig {
   name: string;
   label: string;
-  initialValue: string;
+  initialValue: string | undefined;
   validation?: any;
   color?: string;
+  type?: "text" | "select" | "date" | "datetime-local";
+  options?: { label: string; value: string }[];
 }
 
 interface DynamicFormProps {
   fields: FieldConfig[];
-  onSubmit: (data: any) => void;
+  onSubmit: (data: any) => void; // This is the function that will handle the form submission
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
+  // Створюємо валідаційну схему за допомогою Yup
   const validationSchema = Yup.object(
     fields.reduce((acc, field) => {
       if (field.validation) {
@@ -31,6 +31,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
     }, {} as Record<string, any>)
   );
 
+  // Ініціалізуємо useForm з валідацією та значеннями полів
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: fields.reduce((acc, field) => {
@@ -39,8 +40,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
     }, {} as Record<string, any>),
   });
 
+  // Функція для обробки відправки форми
+  const handleFormSubmit: SubmitHandler<any> = (data) => {
+    // Тут можна передавати дані в API або зберігати в стані
+    console.log("Form Data Submitted:", data);
+    // Викликаємо onSubmit, передаючи зібрані дані
+    onSubmit(data);
+  };
+
   return (
-    <form autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+    <form autoComplete="off" onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="flex flex-col gap-4">
         {fields.map((field) => (
           <CustomInput
@@ -48,21 +57,14 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
             key={field.name}
             name={field.name}
             control={control}
-            label={field.label}
+            label={field.label.charAt(0).toUpperCase() + field.label.slice(1)}
             defaultValue={field.initialValue}
-            rules={
-              field.validation
-                ? { required: field.validation.required }
-                : undefined
-            }
+            type={field.type}
+            options={field.options}
           />
         ))}
       </div>
-      <MyBtn
-        className="mt-4"
-        label="Відправити"
-        onClick={() => console.log("eee")}
-      />
+      <MyBtn className="mt-4" type="submit" label="Відправити" />
     </form>
   );
 };

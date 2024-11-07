@@ -44,18 +44,18 @@ const Sidebar = () => {
             to: "/tasks-and-Goals",
           },
           { icon: FlagIcon, label: "Reflections", to: "/reflections" },
-          { icon: CalendarTodayIcon, label: "Daily Planner" },
-          { icon: EventNoteIcon, label: "Weekly Planner" },
-          { icon: EventNoteIcon, label: "Monthly Planner" },
-          { icon: NotesIcon, label: "Notes" },
-          { icon: AccountTreeIcon, label: "Mind Mapping" },
-          { icon: TimelineIcon, label: "Habits Tracker" },
-          { icon: SelfImprovementIcon, label: "Reflections" },
-          { icon: EmojiEventsIcon, label: "Achievements" },
-          { icon: SettingsIcon, label: "Settings" },
-          { icon: PersonIcon, label: "Profile" },
+          // { icon: CalendarTodayIcon, label: "Daily Planner" },
+          // { icon: EventNoteIcon, label: "Weekly Planner" },
+          // { icon: EventNoteIcon, label: "Monthly Planner" },
+          // { icon: NotesIcon, label: "Notes" },
+          // { icon: AccountTreeIcon, label: "Mind Mapping" },
+          // { icon: TimelineIcon, label: "Habits Tracker" },
+          // { icon: SelfImprovementIcon, label: "Reflections" },
+          // { icon: EmojiEventsIcon, label: "Achievements" },
+          // { icon: SettingsIcon, label: "Settings" },
+          // { icon: PersonIcon, label: "Profile" },
         ].map(({ icon: Icon, label, to }) => (
-          <Tooltip title={label} placement="right">
+          <Tooltip key={label} title={label} placement="right">
             <Link
               key={label}
               className="w-full flex p-2 hover:bg-slate-700 cursor-pointer"

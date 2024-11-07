@@ -1,9 +1,15 @@
 import express from "express";
-import { createTask, getTasks } from "../controllers/taskController.js";
+import {
+  createTask,
+  getTasks,
+  updateTaskStatus,
+} from "../controllers/taskController.js";
 
 const router = express.Router();
 
 router.post("/tasks", createTask);
-router.get("/get-tasks/:userId", getTasks);
+router.post("/tasks/:goalId", createTask); // to create task for some goal
+router.get("/tasks/:userId", getTasks);
+router.patch("/tasks/:userId", updateTaskStatus);
 
 export default router;
