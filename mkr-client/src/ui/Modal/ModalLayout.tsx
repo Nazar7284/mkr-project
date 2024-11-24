@@ -1,6 +1,5 @@
 import React, { FC, PropsWithChildren } from "react";
 import Portal from "src/common/Portal";
-import { cn } from "src/helpers/cn";
 import { ModalProps } from "src/hooks/useModal";
 
 interface ModalLayoutProps extends PropsWithChildren<ModalProps> {}

@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ title, subtitle }) => {
   return (
-    <Box mb="30px" minWidth="350px">
+    <Box minWidth="350px" height="150px">
       <Typography variant="h2" fontWeight="bold" sx={{ m: "0 0 5px 0" }}>
         {title}
       </Typography>

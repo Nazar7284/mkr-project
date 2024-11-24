@@ -6,6 +6,7 @@ const listSchema = new mongoose.Schema(
     items: [
       {
         name: { type: String, required: true },
+        completed: { type: Boolean, default: false },
       },
     ],
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -13,4 +14,4 @@ const listSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const List = mongoose.model("List", listSchema);
+export const List = mongoose.model("List", listSchema);

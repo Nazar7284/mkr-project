@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import routes from "./routes/index.js";
 import cors from "cors";
+import { setupResetCronJob } from "./cronJobs/resetDailyTask.js";
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ app.use(cors());
 
 const PORT = process.env.PORT || 7000;
 const MONGOURL = process.env.MONGO_URL;
+
+setupResetCronJob();
 
 mongoose
   .connect(MONGOURL)

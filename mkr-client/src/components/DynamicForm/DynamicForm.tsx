@@ -31,7 +31,6 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
     }, {} as Record<string, any>)
   );
 
-  // Ініціалізуємо useForm з валідацією та значеннями полів
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: fields.reduce((acc, field) => {
@@ -40,11 +39,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
     }, {} as Record<string, any>),
   });
 
-  // Функція для обробки відправки форми
   const handleFormSubmit: SubmitHandler<any> = (data) => {
-    // Тут можна передавати дані в API або зберігати в стані
-    console.log("Form Data Submitted:", data);
-    // Викликаємо onSubmit, передаючи зібрані дані
+    // console.log("Form Data Submitted:", data);
     onSubmit(data);
   };
 
@@ -64,7 +60,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
           />
         ))}
       </div>
-      <MyBtn className="mt-4" type="submit" label="Відправити" />
+      <MyBtn className="mt-4" type="submit">
+        Send
+      </MyBtn>
     </form>
   );
 };

@@ -5,13 +5,23 @@ import * as Yup from "yup";
 import DynamicForm, {
   FieldConfig,
 } from "src/components/DynamicForm/DynamicForm";
-import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { addDailyTask } from "src/api/dailyTasks";
+import { addTaskToGoal } from "src/api/goals";
+import { addTask } from "src/api/tasks";
 
 interface CreateTaskModalProps extends ModalProps {
-  productId?: number;
+  type?: "casual" | "daily";
+  goalId?: string;
+  goalTitle?: string;
 }
 
-const CreateTaskModal: FC<CreateTaskModalProps> = ({ productId, ...props }) => {
+const CreateTaskModal: FC<CreateTaskModalProps> = ({
+  type = "casual",
+  goalId,
+  goalTitle,
+  ...props
+}) => {
   const fields: FieldConfig[] = [
     {
       name: "title",
@@ -29,69 +39,86 @@ const CreateTaskModal: FC<CreateTaskModalProps> = ({ productId, ...props }) => {
         .required("Description is required")
         .min(2, "Minimum 2 characters"),
     },
-    // {
-    //   name: "priority",
-    //   label: "Priority",
-    //   initialValue: "medium",
-    //   validation: Yup.string()
-    //     .oneOf(["low", "medium", "high"])
-    //     .required("Priority is required"),
-    //   type: "select",
-    //   options: [
-    //     { label: "Low", value: "low" },
-    //     { label: "Medium", value: "medium" },
-    //     { label: "High", value: "high" },
-    //   ],
-    // },
-    // {
-    //   name: "deadline",
-    //   label: "Deadline",
-    //   initialValue: "",
-    //   validation: Yup.date()
-    //     .nullable()
-    //     .notRequired()
-    //     .transform((curr, originalValue) => {
-    //       return originalValue === "" ? null : curr;
-    //     }),
-    //   type: "datetime-local",
-    // },
-    // {
-    //   name: "category",
-    //   label: "Category",
-    //   initialValue: "other",
-    //   validation: Yup.string()
-    //     .oneOf(["personal", "work", "health", "other"])
-    //     .required("Category is required"),
-    //   type: "select", // Тип select
-    //   options: [
-    //     { label: "Personal", value: "personal" },
-    //     { label: "Work", value: "work" },
-    //     { label: "Health", value: "health" },
-    //     { label: "Other", value: "other" },
-    //   ],
-    // },
+    {
+      name: "priority",
+      label: "Priority",
+      initialValue: "medium",
+      validation: Yup.string()
+        .oneOf(["low", "medium", "high"])
+        .required("Priority is required"),
+      type: "select",
+      options: [
+        { label: "Low", value: "low" },
+        { label: "Medium", value: "medium" },
+        { label: "High", value: "high" },
+      ],
+    },
+    {
+      name: "deadline",
+      label: "Deadline",
+      initialValue: "",
+      validation: Yup.date()
+        .nullable()
+        .notRequired()
+        .transform((curr, originalValue) => {
+          return originalValue === "" ? null : curr;
+        }),
+      type: "datetime-local",
+    },
+    {
+      name: "category",
+      label: "Category",
+      initialValue: "other",
+      validation: Yup.string()
+        .oneOf(["personal", "work", "health", "other"])
+        .required("Category is required"),
+      type: "select", // Тип select
+      options: [
+        { label: "Personal", value: "personal" },
+        { label: "Work", value: "work" },
+        { label: "Health", value: "health" },
+        { label: "Other", value: "other" },
+      ],
+    },
   ];
 
-  const id = "671c18e1e02d19d05bc98803";
+  const queryClient = useQueryClient();
 
-  const handleSubmitForm = async (formData: any) => {
-    if (formData.deadline) {
-      formData.deadline = new Date(formData.deadline).toISOString(); // Перетворюємо в ISO-формат
-    }
-    console.log("Received form data:", formData);
-    try {
-      const response = await axios.post("http://localhost:8000/mkr/daily", {
-        ...formData,
-        user: id,
-      });
-      console.log("Task created:", response.data);
-    } catch (error) {
-      console.error("Error creating task:", error);
+  const filteredFields = type === "casual" ? fields : fields.slice(0, 2);
+  const mutationFn = async (variables: { formData: any; goalId?: string }) => {
+    if (type === "casual") {
+      if (variables.goalId) {
+        return addTaskToGoal({
+          formData: variables.formData,
+          goalId: variables.goalId,
+        });
+      } else {
+        return addTask(variables.formData);
+      }
+    } else {
+      return addDailyTask(variables.formData);
     }
   };
 
-  const handleCancel = () => {
-    props.onClose();
+  const queryKey =
+    type === "casual" ? (goalId ? "goal" : "tasks") : "dailyTasks";
+
+  const completeTask = useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKey], exact: true });
+      props.onClose();
+    },
+    onError: (error) => {
+      console.error("Error in mutation:", error);
+    },
+  });
+
+  const handleSubmitForm = async (formData: any) => {
+    if (formData.deadline) {
+      formData.deadline = new Date(formData.deadline).toISOString();
+    }
+    completeTask.mutate({ formData, goalId });
   };
 
   return (
@@ -99,23 +126,9 @@ const CreateTaskModal: FC<CreateTaskModalProps> = ({ productId, ...props }) => {
       <div className="p-4">
         <h2 className="text-lg font-semibold">Додавання завдання</h2>
         <div>
-          <DynamicForm fields={fields} onSubmit={handleSubmitForm} />
+          <DynamicForm fields={filteredFields} onSubmit={handleSubmitForm} />
         </div>
-        {/* <div className="flex justify-end mt-4">
-          <button
-            onClick={handleCancel}
-            className="mr-2 bg-gray-300 text-black rounded px-4 py-2"
-          >
-            Скасувати
-          </button>
-          <button
-            type="submit"
-            form="dynamic-form"
-            className="bg-red-500 text-white rounded px-4 py-2"
-          >
-            Підтвердити
-          </button>
-        </div> */}
+        {goalId && <div>Create task for goal {goalTitle}</div>}
       </div>
     </Modal>
   );

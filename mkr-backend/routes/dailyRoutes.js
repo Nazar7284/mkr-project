@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post("/daily", createDailyTask);
 router.get("/daily/:userId", getDailyTasks);
-router.patch("/daily/:userId", updateDailyTaskStatus);
-router.delete("/daily/:userId", deleteDailyTask);
+router.patch("/daily/:dailyId", updateDailyTaskStatus);
+router.delete("/daily/:dailyId", deleteDailyTask);
 
 export default router;

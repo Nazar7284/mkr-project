@@ -3,6 +3,11 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      colors: {
+        "dark-red": "#8B0000",
+        "dark-blood-red": "#660000",
+        danger: "#8B0000",
+      },
       animation: {
         fadeoutright: "fade-out-right 1s ease-in-out 1",
         fadeinright: "fade-in-right 1.3s ease-in-out 1",

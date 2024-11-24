@@ -1,128 +1,88 @@
 import { Box } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import DynamicForm from "src/components/DynamicForm/DynamicForm";
 import Header from "src/components/Header/Header";
 import TaskList from "src/components/TaskCard";
-import dailyTasks from "src/data/mockData";
 import useModal from "src/hooks/useModal";
-import Modal from "src/ui/Modal";
-import axios from "axios";
 import CreateTaskModal from "src/ui/CreateTaskModal";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  deleteDailyTasks,
+  getDailyTasks,
+  completeDailyTask,
+} from "src/api/dailyTasks";
+import MyBtn from "src/components/Button";
+import { useState } from "react";
+import { IDaily } from "src/models/tasks";
 
 const DailyTasks = () => {
+  const queryClient = useQueryClient();
   const modalProps = useModal();
-  const [data, setData] = useState<any>();
+  const [isDeleteMode, setIsDeleteMode] = useState(false);
+  const toggleDeleteMode = () => setIsDeleteMode(!isDeleteMode);
 
-  const handleCompleteTask = async (id: number) => {
-    try {
-      const response = await axios.patch(
-        `http://localhost:8000/mkr/daily/${id}`,
-        {
-          isCompleted: true,
-        }
-      );
-      console.log("Task updated:", response.data);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
+  const {
+    data: dailyTasks,
+    error: errorDaily,
+    isLoading: isLoadingDaily,
+  } = useQuery({
+    queryKey: ["dailyTasks"],
+    queryFn: getDailyTasks,
+  });
 
-  useEffect(() => {
-    testgetTask();
-  }, []);
+  const completeTask = useMutation({
+    mutationFn: completeDailyTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dailyTasks"], exact: true });
+    },
+    onError: (error) => {
+      console.error("Error in mutation:", error);
+    },
+  });
 
-  const id = "671c18e1e02d19d05bc98803";
-
-  const testTask = async () => {
-    try {
-      const response = await axios.post("http://localhost:8000/mkr/tasks", {
-        title: "New Task2",
-        description: "Description of the new task2",
-        user: id,
-      });
-      console.log("Task created:", response.data);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
-  const testgetTask = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/mkr/daily/${id}`);
-      setData(response.data);
-      console.log("Task get:", response.data);
-    } catch (error) {
-      console.error("Error creating task:", error);
-    }
-  };
-
+  //bg-gradient-to-r from-slate-900 to-slate-700
+  const displayedData = [
+    ...(dailyTasks ?? []).map((task: IDaily) => ({ ...task, type: "daily" })),
+  ];
   return (
-    <Box>
-      <div className="flex flex-row items-center flex-wrap border-b-2 border-gray-800">
-        <Header title="Daily Task" subtitle="List of all your task for today" />
-        <CreateTaskModal {...modalProps} />
-        <div className="flex flex-wrap gap-4 justify-around flex-1">
-          <button
-            onClick={modalProps.onOpen}
-            className="bg-gradient-dark-blue text-white font-bold w-72 p-4 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
-          >
-            Task
-          </button>
-          {/* <button
-            onClick={modalProps.onOpen}
-            className="bg-gradient-dark-blue text-white font-bold w-72 p-4 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
-          >
-            Create new daily task
-          </button>
-          <button
-            onClick={modalProps.onOpen}
-            className="bg-gradient-dark-blue text-white font-bold w-72 p-4 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
-          >
-            Show only uncomplete
-          </button>
-          <button
-            onClick={modalProps.onOpen}
-            className="bg-gradient-dark-blue text-white font-bold w-72 p-4 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
-          >
-            Show my char
-          </button> */}
+    <div
+      className={`flex-1 min-h-screen w-full h-full px-14 py-8 text-white ml-16 ${
+        isDeleteMode
+          ? "bg-gradient-to-r from-red-800 to-red-900"
+          : "bg-slate-600"
+      }`}
+    >
+      <Box>
+        <div className="flex flex-row items-center flex-wrap pb-4 border-b-2 border-gray-800">
+          <Header
+            title="Daily Task"
+            subtitle="List of all your task for today"
+          />
+          <CreateTaskModal {...modalProps} type="daily" />
+          <div className="flex flex-wrap gap-4 justify-around flex-1">
+            <MyBtn variant={"gradient"} onClick={modalProps.onOpen}>
+              Create Daily Task
+            </MyBtn>
+            {isDeleteMode ? (
+              <MyBtn variant={"gradient"} onClick={toggleDeleteMode}>
+                Normal mode
+              </MyBtn>
+            ) : (
+              <MyBtn variant={"gradient"} onClick={toggleDeleteMode}>
+                Delete Mode
+              </MyBtn>
+            )}
+          </div>
         </div>
-      </div>
-      <div className="container mx-auto">
-        <h1 className="text-3xl font-bold mb-4">Мої завдання</h1>
-        {data?.map((elem: any) => {
-          return (
-            <div key={elem._id} className="w-full flex justify-between mt-2">
-              <h4>{elem.title}</h4>
-              {elem.isCompleted ? (
-                <div>Завершено</div>
-              ) : (
-                <button onClick={() => handleCompleteTask(elem._id)}>
-                  Завершити
-                </button>
-              )}
-            </div>
-          );
-        })}
-        {/* <TaskList tasks={dailyTasks} onComplete={handleComplete} /> */}
-      </div>
-      {/* <Box>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      </Box> */}
-    </Box>
+        <div className="mt-4">
+          {isLoadingDaily ? (
+            <div className="text-4xl font-bold text-center">Loading...</div>
+          ) : errorDaily ? (
+            <div>Помилка {errorDaily?.message}</div>
+          ) : (
+            <TaskList tasks={displayedData} mode={isDeleteMode} />
+          )}
+        </div>
+      </Box>
+    </div>
   );
 };
 

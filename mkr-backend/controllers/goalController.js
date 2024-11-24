@@ -1,18 +1,20 @@
 import { Goal } from "../models/goal.js";
+import { Task } from "../models/tasks.js";
 
 export const createGoal = async (req, res) => {
   try {
-    const { title, description, userId } = req.body;
+    const { title, description, user } = req.body;
 
     const goal = new Goal({
       title,
       description,
-      user: userId,
+      user,
       tasks: [],
     });
 
     await goal.save();
     res.status(201).json(goal);
+    console.log("Завершено");
   } catch (error) {
     console.error("Error creating goal:", error);
     res.status(400).json({ error: error.message });
@@ -21,8 +23,8 @@ export const createGoal = async (req, res) => {
 
 export const getGoalWithTasks = async (req, res) => {
   try {
-    const goalId = req.params.goalId;
-    const goal = await Goal.findById(goalId).populate("tasks");
+    const userId = req.params.userId;
+    const goal = await Goal.find({ user: userId }).populate("tasks");
 
     if (!goal) {
       return res.status(404).json({ error: "Goal not found" });
@@ -37,6 +39,7 @@ export const getGoalWithTasks = async (req, res) => {
 
 export const deleteGoal = async (req, res) => {
   try {
+    console.log("goal", req.params);
     const goalId = req.params.goalId;
 
     const goal = await Goal.findById(goalId);
@@ -46,7 +49,7 @@ export const deleteGoal = async (req, res) => {
 
     await Task.deleteMany({ goal: goalId });
 
-    await goal.remove();
+    await Goal.findByIdAndDelete(goalId);
 
     res
       .status(200)

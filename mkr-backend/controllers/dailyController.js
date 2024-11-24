@@ -30,7 +30,6 @@ export const getDailyTasks = async (req, res) => {
     }
 
     const dailyTasks = await DailyTask.find({ user: userId });
-    console.log("1", dailyTasks);
 
     res.status(200).json(dailyTasks);
   } catch (error) {
@@ -41,10 +40,10 @@ export const getDailyTasks = async (req, res) => {
 
 export const updateDailyTaskStatus = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { dailyId } = req.params;
     const { isCompleted } = req.body;
 
-    const task = await DailyTask.findById(taskId);
+    const task = await DailyTask.findById(dailyId);
     if (!task) {
       return res.status(404).json({ error: "Daily task not found" });
     }
@@ -62,9 +61,9 @@ export const updateDailyTaskStatus = async (req, res) => {
 
 export const deleteDailyTask = async (req, res) => {
   try {
-    const { taskId } = req.params;
+    const { dailyId } = req.params;
 
-    const task = await DailyTask.findByIdAndDelete(taskId);
+    const task = await DailyTask.findByIdAndDelete(dailyId);
     if (!task) {
       return res.status(404).json({ error: "Daily task not found" });
     }
@@ -75,24 +74,3 @@ export const deleteDailyTask = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-cron.schedule("0 0 * * *", async () => {
-  try {
-    const now = new Date();
-
-    const tasks = await DailyTask.find({
-      isCompleted: { $ne: true },
-      statusUpdatedAt: { $lt: new Date(now.setHours(0, 0, 0, 0)) },
-    });
-
-    for (let task of tasks) {
-      task.isCompleted = false;
-      task.statusUpdatedAt = null;
-      await task.save();
-    }
-
-    console.log("Daily task statuses have been reset.");
-  } catch (error) {
-    console.error("Error resetting daily task statuses:", error);
-  }
-});
