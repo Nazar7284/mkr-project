@@ -1,18 +1,18 @@
-import List from "./models/List";
+import { List } from "../models/list.js";
 
 export const createList = async (req, res) => {
   try {
     const userId = req.params.userId;
     const { title } = req.body;
 
-    if (!title || !user) {
+    if (!title || !userId) {
       return res.status(400).json({ message: "Title and user are required." });
     }
 
     const list = new List({
       title,
-      items: items || [],
-      user,
+      items: [],
+      user: userId,
     });
 
     await list.save();
@@ -22,68 +22,89 @@ export const createList = async (req, res) => {
   }
 };
 
-export const addItemToList = async (listId, itemName) => {
+export const addItemToList = async (req, res) => {
   try {
+    const listId = req.params.listId;
+    const { itemName } = req.body;
+
     const list = await List.findById(listId);
-    if (!list) throw new Error("List not found");
+    if (!list) return res.status(404).json({ message: "List not found" });
 
     list.items.push({ name: itemName });
     await list.save();
-    return list;
+    res.status(200).json(list);
   } catch (error) {
-    console.error("Error adding item to list:", error);
-    throw error;
+    res.status(500).json({ message: "Error adding item to list", error });
   }
 };
 
-export const getAllLists = async () => {
+export const getAllLists = async (req, res) => {
   try {
     const userId = req.params.userId;
     const lists = await List.find({ user: userId });
-    return lists;
+    if (!lists) {
+      return res.status(200).json([]);
+    }
+    res.status(200).json(lists);
   } catch (error) {
-    console.error("Error fetching lists:", error);
-    throw error;
+    res.status(500).json({ message: "Error fetching lists", error });
   }
 };
 
-export const deleteList = async (listId) => {
+export const deleteList = async (req, res) => {
   try {
+    const listId = req.params.listId;
     const deletedList = await List.findByIdAndDelete(listId);
-    if (!deletedList) throw new Error("List not found");
-    return deletedList;
+    if (!deletedList)
+      return res.status(404).json({ message: "List not found" });
+
+    res.status(200).json(deletedList);
   } catch (error) {
-    console.error("Error deleting list:", error);
-    throw error;
+    res.status(500).json({ message: "Error deleting list", error });
   }
 };
 
-export const markItemAsCompleted = async (listId, itemId) => {
+export const markItemAsCompleted = async (req, res) => {
   try {
-    const list = await List.findOneAndUpdate(
+    const { listId, itemId } = req.body;
+    console.log("listId:", listId, "itemId:", itemId);
+
+    const list = await List.findOne({
+      _id: listId,
+      "items._id": itemId,
+    });
+    console.log("Found list:", list);
+
+    const updatedList = await List.findOneAndUpdate(
       { _id: listId, "items._id": itemId },
       { $set: { "items.$.completed": true } },
       { new: true }
     );
-    if (!list) throw new Error("List or item not found");
-    return list;
+    console.log("Updated list:", updatedList);
+
+    if (!updatedList)
+      return res.status(404).json({ message: "List or item not found" });
+
+    res.status(200).json(updatedList);
   } catch (error) {
     console.error("Error marking item as completed:", error);
-    throw error;
+    res.status(500).json({ message: "Error marking item as completed", error });
   }
 };
 
-export const deleteItemFromList = async (listId, itemId) => {
+export const deleteItemFromList = async (req, res) => {
   try {
+    const { listId, itemId } = req.params;
     const list = await List.findByIdAndUpdate(
       listId,
       { $pull: { items: { _id: itemId } } },
       { new: true }
     );
-    if (!list) throw new Error("List or item not found");
-    return list;
+    if (!list) {
+      return res.status(404).json({ message: "List or item not found" });
+    }
+    res.status(200).json(list);
   } catch (error) {
-    console.error("Error deleting item from list:", error);
-    throw error;
+    res.status(500).json({ message: "Error deleting item from list", error });
   }
 };

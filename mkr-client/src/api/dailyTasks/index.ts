@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const userId = "671c18e1e02d19d05bc98803";
+const userId = localStorage.getItem("userId");
 
 export async function addDailyTask(formData: any) {
   try {
@@ -17,7 +17,7 @@ export async function addDailyTask(formData: any) {
 export async function getDailyTasks() {
   try {
     const response = await axios.get(
-      `http://localhost:8000/mkr/daily/${userId}`
+      `http://localhost:8000/mkr/daily/${userId}`,
     );
     console.log("Daily get:", response.data);
     return response.data;
@@ -32,7 +32,7 @@ export async function completeDailyTask(idDaily: string) {
       `http://localhost:8000/mkr/daily/${idDaily}`,
       {
         isCompleted: true,
-      }
+      },
     );
     console.log("Task updated:", response.data);
   } catch (error) {
@@ -44,7 +44,7 @@ export async function deleteDailyTasks(idDaily: string) {
   try {
     console.log("delete");
     const response = await axios.delete(
-      `http://localhost:8000/mkr/daily/${idDaily}`
+      `http://localhost:8000/mkr/daily/${idDaily}`,
     );
     console.log("Daily delete:", response.data);
     return response.data;

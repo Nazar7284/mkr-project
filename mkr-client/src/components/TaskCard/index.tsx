@@ -18,9 +18,9 @@ import { FaCheckCircle } from "react-icons/fa";
 import { FaFolderClosed } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteDailyTasks } from "src/api/dailyTasks";
+import { completeDailyTask, deleteDailyTasks } from "src/api/dailyTasks";
 import { deleteGoal } from "src/api/goals";
-import { deleteTask } from "src/api/tasks";
+import { completeTask, deleteTask } from "src/api/tasks";
 
 interface DailyTask {
   _id: string;
@@ -45,7 +45,6 @@ interface TaskCardProps {
   task: TaskComponentProps;
   mode: boolean;
   onComplete?: (idDaily: string) => void;
-  onDelete: (idDaily: string) => void;
 }
 
 interface TaskListProps {
@@ -54,12 +53,7 @@ interface TaskListProps {
   onComplete?: (id: string) => void;
 }
 
-const TaskCard: React.FC<any> = ({
-  task,
-  mode = false,
-  onComplete,
-  onDelete,
-}) => {
+const TaskCard: React.FC<any> = ({ task, mode = false, onComplete }) => {
   const [isCompleted, setIsCompleted] = useState(task.isCompleted);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isPlusAnimating, setIsPlusAnimating] = useState(false);
@@ -98,6 +92,26 @@ const TaskCard: React.FC<any> = ({
     },
   });
 
+  const handleCompleteTask = useMutation({
+    mutationFn: completeTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"], exact: true });
+    },
+    onError: (error) => {
+      console.error("Error in mutation:", error);
+    },
+  });
+
+  const handleCompleteDaily = useMutation({
+    mutationFn: completeDailyTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["dailyTasks"], exact: true });
+    },
+    onError: (error) => {
+      console.error("Error in mutation:", error);
+    },
+  });
+
   const handleDelete = () => {
     if (task.type === "daily") {
       handleDeleteDailyTask.mutate(task._id);
@@ -111,18 +125,24 @@ const TaskCard: React.FC<any> = ({
   };
 
   const handleComplete = (id: string) => {
+    if (task.type === "daily") {
+      handleCompleteDaily.mutate(task._id);
+    } else if (task.type === "task") {
+      handleCompleteTask.mutate(task._id);
+    } else {
+      console.error("Unknown task type:", task.type);
+    }
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);
       setIsCompleted(true);
       setIsPlusAnimating(true);
-      onComplete && onComplete(id);
     }, 900);
   };
 
   return (
     <div
-      className={`w-full min-h-32 rounded-lg border-4 border-gray-800 flex items-center text-2xl ${
+      className={`flex min-h-32 w-full items-center rounded-lg border-4 border-gray-800 text-2xl ${
         isCompleted ? "bg-slate-600" : "bg-slate-400"
       }`}
     >
@@ -185,6 +205,7 @@ const TaskCard: React.FC<any> = ({
             title={task.title}
             description={task.description}
             status={isCompleted}
+            priority={task.priority}
           />
 
           {mode ? (
@@ -196,7 +217,7 @@ const TaskCard: React.FC<any> = ({
             </div>
           ) : !isCompleted ? (
             <button
-              className={`py-2 px-4 border-2 ${
+              className={`border-2 px-4 py-2 ${
                 isAnimating ? "animate-fadeoutright" : ""
               }`}
               onClick={() => handleComplete(task._id)}

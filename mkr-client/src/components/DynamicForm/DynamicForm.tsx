@@ -11,17 +11,16 @@ export interface FieldConfig {
   initialValue: string | undefined;
   validation?: any;
   color?: string;
-  type?: "text" | "select" | "date" | "datetime-local";
+  type?: "text" | "select" | "date" | "datetime-local" | "password";
   options?: { label: string; value: string }[];
 }
 
 interface DynamicFormProps {
   fields: FieldConfig[];
-  onSubmit: (data: any) => void; // This is the function that will handle the form submission
+  onSubmit: (data: any) => void;
 }
 
 const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
-  // Створюємо валідаційну схему за допомогою Yup
   const validationSchema = Yup.object(
     fields.reduce((acc, field) => {
       if (field.validation) {
@@ -54,8 +53,8 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
             name={field.name}
             control={control}
             label={field.label.charAt(0).toUpperCase() + field.label.slice(1)}
-            defaultValue={field.initialValue}
-            type={field.type}
+            initialValue={field.initialValue}
+            type={field.type ?? "text"}
             options={field.options}
           />
         ))}

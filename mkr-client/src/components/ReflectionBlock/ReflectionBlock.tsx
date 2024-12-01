@@ -2,6 +2,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Rnd } from "react-rnd";
 import { ImCross } from "react-icons/im";
 import { IBlock } from "src/types/block";
+import MyBtn from "../Button";
+import useModal from "src/hooks/useModal";
+import CreateNoteModal from "src/ui/CreateNoteModal";
 
 const ReflectionBlock: React.FC = () => {
   const [blocks, setBlocks] = useState<IBlock[]>([]);
@@ -18,11 +21,11 @@ const ReflectionBlock: React.FC = () => {
     localStorage.setItem("blocks", JSON.stringify(blocks));
   }, [blocks]);
 
-  const addBlock = () => {
+  const addBlock = (title: string, content: string) => {
     const newBlock: IBlock = {
       id: Date.now(),
-      content: "",
-      title: "Title",
+      content,
+      title,
       x: 50,
       y: 50,
       width: 200,
@@ -31,11 +34,12 @@ const ReflectionBlock: React.FC = () => {
     };
     setBlocks([...blocks, newBlock]);
     setHighestZIndex(highestZIndex + 1);
+    modalProps.onClose();
   };
 
   const updateBlockPosition = (
     id: number,
-    newPosition: { x: number; y: number }
+    newPosition: { x: number; y: number },
   ) => {
     setBlocks((prev) =>
       prev.map((block) =>
@@ -44,21 +48,21 @@ const ReflectionBlock: React.FC = () => {
               ...block,
               x: Math.max(
                 0,
-                Math.min(newPosition.x, window.innerWidth - block.width)
+                Math.min(newPosition.x, window.innerWidth - block.width),
               ),
               y: Math.max(
                 0,
-                Math.min(newPosition.y, window.innerHeight - block.height)
+                Math.min(newPosition.y, window.innerHeight - block.height),
               ),
             }
-          : block
-      )
+          : block,
+      ),
     );
   };
 
   const updateBlockSize = (
     id: number,
-    newSize: { width: number; height: number }
+    newSize: { width: number; height: number },
   ) => {
     setBlocks((prev) =>
       prev.map((block) =>
@@ -68,16 +72,16 @@ const ReflectionBlock: React.FC = () => {
               width: newSize.width,
               height: newSize.height,
             }
-          : block
-      )
+          : block,
+      ),
     );
   };
 
   const bringToFront = (id: number) => {
     setBlocks((prev) =>
       prev.map((block) =>
-        block.id === id ? { ...block, zIndex: highestZIndex + 1 } : block
-      )
+        block.id === id ? { ...block, zIndex: highestZIndex + 1 } : block,
+      ),
     );
     setHighestZIndex((prev) => prev + 1);
   };
@@ -106,11 +110,11 @@ const ReflectionBlock: React.FC = () => {
             zIndex: block.zIndex,
             borderRadius: "8px",
           }}
-          className="relative shadow-md bg-gray-100 border border-gray-400"
+          className="relative border border-gray-400 bg-gray-100 shadow-md"
         >
-          <div className="w-full h-full bg-white relative rounded-lg p-2 shadow-lg min-h-[100px] min-w-[200px] overflow-hidden">
-            <div className="border-b-2 border-gray-300 flex justify-between items-center pb-1 mb-2">
-              <div className="text-gray-700 font-semibold">{block.title}</div>
+          <div className="relative h-full min-h-[100px] w-full min-w-[200px] overflow-hidden rounded-lg bg-white p-2 shadow-lg">
+            <div className="mb-2 flex items-center justify-between border-b-2 border-gray-300 pb-1">
+              <div className="font-semibold text-gray-700">{block.title}</div>
               <button
                 onClick={() =>
                   setBlocks(blocks.filter((b) => b.id !== block.id))
@@ -120,7 +124,7 @@ const ReflectionBlock: React.FC = () => {
               </button>
             </div>
             <div
-              className={`h-[${block.height}px - 60px] text-gray-600 overflow-y-scroll no-scrollbar`}
+              className={`h-[${block.height}px - 60px] no-scrollbar overflow-y-scroll text-gray-600`}
               style={{
                 WebkitOverflowScrolling: "touch",
               }}
@@ -130,18 +134,18 @@ const ReflectionBlock: React.FC = () => {
           </div>
         </Rnd>
       )),
-    [blocks]
+    [blocks],
   );
+
+  const modalProps = useModal();
 
   return (
     <div>
-      <button
-        onClick={addBlock}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Додати нотатку
-      </button>
-      <div className="relative w-full h-[calc(100vh-250px)] border border-black overflow-hidden">
+      <MyBtn onClick={modalProps.onOpen} className="my-4" variant={"gradient"}>
+        Create note
+      </MyBtn>
+      <CreateNoteModal onComplete={addBlock} {...modalProps} />
+      <div className="relative h-[calc(100vh-250px)] w-full overflow-hidden border border-black">
         {renderedBlocks}
       </div>
     </div>

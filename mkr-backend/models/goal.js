@@ -5,7 +5,6 @@ const goalSchema = new mongoose.Schema(
     title: { type: String, required: true },
     description: { type: String },
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }], // Список завдань, пов’язаних з ціллю
-    progress: { type: Number, default: 0, min: 0, max: 100 },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Посилання на користувача
   },
   { timestamps: true }

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const userId = "671c18e1e02d19d05bc98803";
+const userId = localStorage.getItem("userId");
 
 export async function addTask(formData: any) {
   try {
@@ -14,13 +14,13 @@ export async function addTask(formData: any) {
   }
 }
 
-export async function handleCompleteTask(idTask: string) {
+export async function completeTask(idTask: string) {
   try {
     const response = await axios.patch(
       `http://localhost:8000/mkr/tasks/${idTask}`,
       {
         isCompleted: true,
-      }
+      },
     );
     console.log("Task updated:", response.data);
   } catch (error) {
@@ -31,7 +31,7 @@ export async function handleCompleteTask(idTask: string) {
 export async function getTasks() {
   try {
     const response = await axios.get(
-      `http://localhost:8000/mkr/tasks/${userId}`
+      `http://localhost:8000/mkr/tasks/${userId}`,
     );
     console.log("Daily get:", response.data);
     return response.data;
@@ -43,7 +43,7 @@ export async function getTasks() {
 export async function deleteTask(taskId: string) {
   try {
     const response = await axios.delete(
-      `http://localhost:8000/mkr/tasks/${taskId}`
+      `http://localhost:8000/mkr/tasks/${taskId}`,
     );
     console.log("Task delete:", response.data);
     return response.data;

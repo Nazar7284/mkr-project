@@ -53,33 +53,6 @@ const CreateTaskModal: FC<CreateTaskModalProps> = ({
         { label: "High", value: "high" },
       ],
     },
-    {
-      name: "deadline",
-      label: "Deadline",
-      initialValue: "",
-      validation: Yup.date()
-        .nullable()
-        .notRequired()
-        .transform((curr, originalValue) => {
-          return originalValue === "" ? null : curr;
-        }),
-      type: "datetime-local",
-    },
-    {
-      name: "category",
-      label: "Category",
-      initialValue: "other",
-      validation: Yup.string()
-        .oneOf(["personal", "work", "health", "other"])
-        .required("Category is required"),
-      type: "select", // Тип select
-      options: [
-        { label: "Personal", value: "personal" },
-        { label: "Work", value: "work" },
-        { label: "Health", value: "health" },
-        { label: "Other", value: "other" },
-      ],
-    },
   ];
 
   const queryClient = useQueryClient();
@@ -124,7 +97,7 @@ const CreateTaskModal: FC<CreateTaskModalProps> = ({
   return (
     <Modal {...props}>
       <div className="p-4">
-        <h2 className="text-lg font-semibold">Додавання завдання</h2>
+        <h2 className="text-lg font-semibold">Add Daily Task</h2>
         <div>
           <DynamicForm fields={filteredFields} onSubmit={handleSubmitForm} />
         </div>

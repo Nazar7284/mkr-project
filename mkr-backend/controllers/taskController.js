@@ -4,7 +4,7 @@ import { Goal } from "../models/goal.js";
 export const createTask = async (req, res) => {
   try {
     const goalId = req.params?.goalId;
-    const { title, description, user, priority, deadline, category } = req.body;
+    const { title, description, user, priority } = req.body;
 
     let goal = null;
 
@@ -19,8 +19,6 @@ export const createTask = async (req, res) => {
       title,
       description,
       priority,
-      deadline,
-      category,
       user,
       goal: goal ? goalId : null,
     });

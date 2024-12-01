@@ -11,10 +11,13 @@ import TasksGoals from "./pages/TasksGoals";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import GoalInfo from "./pages/GoalInfo";
+import Lists from "./pages/Lists";
+import { useRoutes } from "./hooks/useRoutes";
 
 function App() {
   const modalProps = useModal();
   const queryClient = new QueryClient();
+  const routes = useRoutes();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -27,20 +30,7 @@ Lorem ipsum dolor sit amet consectetur adipisicing elit. Non perferendis
 dolorem dolore, quo omnis quidem fugiat ipsa commodi rem eum?
 </Modal>       */}
 
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/daily-tasks" element={<DailyTasks />} />
-          <Route path="/tasks-and-goals" element={<TasksGoals />} />
-          <Route path="/reflections" element={<Reflections />} />
-          <Route path="/goalInfo/:goalID" element={<GoalInfo />} />
-          {/* <Route path="/form" element={<Form />} /> */}
-          {/* <Route path="/bar" element={<Bar />} /> */}
-          {/* <Route path="/pie" element={<Pie />} /> */}
-          {/* <Route path="/line" element={<Line />} /> */}
-          {/* <Route path="/faq" element={<FAQ />} /> */}
-          {/* <Route path="/calendar" element={<Calendar />} /> */}
-          {/* <Route path="/geography" element={<Geography />} /> */}
-        </Routes>
+        {routes}
       </Box>
       <ReactQueryDevtools />
     </QueryClientProvider>

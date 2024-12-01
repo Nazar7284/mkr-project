@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const userId = "671c18e1e02d19d05bc98803";
+const userId = localStorage.getItem("userId");
 
 export async function addGoal(formData: any) {
   try {
@@ -27,7 +27,7 @@ export async function addTaskToGoal({
       {
         ...formData,
         user: userId,
-      }
+      },
     );
     console.log("Task created:", response.data);
   } catch (error) {
@@ -38,7 +38,7 @@ export async function addTaskToGoal({
 export async function getGoals() {
   try {
     const response = await axios.get(
-      `http://localhost:8000/mkr/goals/${userId}`
+      `http://localhost:8000/mkr/goals/${userId}`,
     );
     console.log("Goal get:", response.data);
     return response.data;
@@ -51,7 +51,7 @@ export async function deleteGoal(goalId: string) {
   try {
     console.log("goal1", goalId);
     const response = await axios.delete(
-      `http://localhost:8000/mkr/goals/${goalId}`
+      `http://localhost:8000/mkr/goals/${goalId}`,
     );
     console.log("Goal delete:");
     return response.data;

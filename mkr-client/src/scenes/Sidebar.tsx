@@ -13,6 +13,10 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import { Link } from "react-router-dom";
 import { Tooltip } from "@mui/material";
+import { FaRegCalendarCheck } from "react-icons/fa";
+import { FaBookOpen } from "react-icons/fa";
+import { AiOutlineUnorderedList } from "react-icons/ai";
+import { LuClipboardList } from "react-icons/lu";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,26 +28,27 @@ const Sidebar = () => {
   return (
     <div
       // className={`bg-slate-600 text-white fixed h-screen flex flex-col w-16 items-center`}
-      className={`fixed top-0 left-0 h-full bg-gray-800 text-white transition-all duration-300 ease-in-out flex flex-col items-center ${
+      className={`fixed left-0 top-0 flex h-full flex-col items-center bg-gray-800 text-white transition-all duration-300 ease-in-out ${
         isOpen ? "w-64" : "w-20"
       }`}
     >
       <div
-        className={`transition-opacity duration-300 my-6 font-bold flex items-center`}
+        className={`my-6 flex items-center font-bold transition-opacity duration-300`}
       >
         Menu
       </div>
 
       <nav>
         {[
-          { icon: HomeIcon, label: "Home" },
-          { icon: FlagIcon, label: "Demo", to: "/daily-tasks" },
+          // { icon: HomeIcon, label: "Home" },
+          { icon: FaRegCalendarCheck, label: "Daily Task", to: "/daily-tasks" },
           {
-            icon: CheckCircleIcon,
+            icon: FlagIcon,
             label: "Tasks and goals",
             to: "/tasks-and-Goals",
           },
-          { icon: FlagIcon, label: "Reflections", to: "/reflections" },
+          { icon: FaBookOpen, label: "Reflections", to: "/reflections" },
+          { icon: LuClipboardList, label: "Lists", to: "/lists" },
           // { icon: CalendarTodayIcon, label: "Daily Planner" },
           // { icon: EventNoteIcon, label: "Weekly Planner" },
           // { icon: EventNoteIcon, label: "Monthly Planner" },
@@ -58,11 +63,10 @@ const Sidebar = () => {
           <Tooltip key={label} title={label} placement="right">
             <Link
               key={label}
-              className="w-full flex p-2 hover:bg-slate-700 cursor-pointer"
+              className="flex w-full cursor-pointer justify-center p-2 hover:bg-slate-700"
               to={to ? to : "/"}
             >
               <Icon />
-              {/* <span className={`whitespace-nowrap`}>{label}</span> */}
             </Link>
           </Tooltip>
         ))}

@@ -1,21 +1,17 @@
 import React from "react";
 import { Controller, Control, FieldValues, FieldError } from "react-hook-form";
+import { FieldConfig } from "../DynamicForm/DynamicForm";
 
-interface CustomInputProps {
-  name: string;
+interface CustomInputProps extends FieldConfig {
   control: Control<FieldValues, any>;
-  label: string;
-  defaultValue?: string;
   rules?: any;
-  type?: "text" | "select" | "date" | "datetime-local";
-  options?: { label: string; value: string }[]; // Для select полів
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
   name,
   control,
   label,
-  defaultValue = "",
+  initialValue = "",
   rules,
   type = "text", // За замовчуванням тип "text"
   options = [], // За замовчуванням порожній масив для options
@@ -24,7 +20,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
     <Controller
       name={name}
       control={control}
-      defaultValue={defaultValue}
+      defaultValue={initialValue}
       rules={rules}
       render={({ field, fieldState: { error } }) => (
         <div style={{ marginBottom: "16px" }}>

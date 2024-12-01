@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { Goal } from "./goal.js";
 
 const taskSchema = new mongoose.Schema(
   {
@@ -10,13 +9,7 @@ const taskSchema = new mongoose.Schema(
       enum: ["low", "medium", "high"],
       default: "medium",
     },
-    deadline: { type: Date },
     isCompleted: { type: Boolean, default: false },
-    category: {
-      type: String,
-      enum: ["work", "personal", "health", "other"],
-      default: "other",
-    },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     goal: { type: mongoose.Schema.Types.ObjectId, ref: "Goal" },
   },

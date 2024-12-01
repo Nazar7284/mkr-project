@@ -4,12 +4,13 @@ import {
   QueryKey,
   useMutation,
 } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { getGoals } from "src/api/goals";
-import { getTasks, handleCompleteTask } from "src/api/tasks";
+import { getTasks } from "src/api/tasks";
 import MyBtn from "src/components/Button";
 import Header from "src/components/Header/Header";
 import TaskList from "src/components/TaskCard";
+import TaskInfo from "src/components/TextInfo";
 import useModal from "src/hooks/useModal";
 import { IGoal, ITask, TaskOrGoal } from "src/models/tasks";
 import CreateGoalModal from "src/ui/CreateGoalModal";
@@ -29,16 +30,6 @@ function TasksGoals() {
   const modalProps2 = useModal();
 
   const queryClient = useQueryClient();
-
-  const completeTask = useMutation({
-    mutationFn: handleCompleteTask,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["dailyTasks"], exact: true });
-    },
-    onError: (error) => {
-      console.error("Error in mutation:", error);
-    },
-  });
 
   const {
     data: tasks,
@@ -94,47 +85,39 @@ function TasksGoals() {
   }
 
   return (
-    <div className="flex-1 min-h-screen overflow-hidden px-14 py-8 text-white ml-16 bg-slate-600">
+    <div
+      className={`flex-1 min-h-screen overflow-hidden px-14 py-8 text-white ml-16 bg-slate-600 ${
+        isDeleteMode
+          ? "bg-gradient-to-r from-red-800 to-red-900"
+          : "bg-slate-600"
+      }`}
+    >
       <CreateTaskModal {...modalProps} />
       <CreateGoalModal {...modalProps2} />
-      <div className="flex flex-wrap flex-row items-center gap-6 mb-6">
+      <div className="flex flex-row items-center justify-between flex-wrap border-b-2 border-gray-800 gap-4">
+        {/* <div className="flex items-center flex-wrap gap-4"> */}
+        {/* <div className="flex flex-wrap flex-col items-start gap-6 mb-6"> */}
         <Header
           title="Tasks and Goals"
           subtitle="Create, manage, and track your tasks and goals"
         />
-        <div className="flex flex-wrap gap-6">
-          <select className="min-h-10 min-w-52 border-2 border-gray-800 bg-gradient-dark-blue">
-            <option className="bg-slate-600" value="all">
-              Усі категорії
-            </option>
-            <option className="bg-slate-600" value="personal">
-              Особисті
-            </option>
-            <option className="bg-slate-600" value="professional">
-              Професійні
-            </option>
-            <option className="bg-slate-600" value="social">
-              Соціальні
-            </option>
-            <option className="bg-slate-600" value="educational">
-              Освітні
-            </option>
-          </select>
-          <select
-            value={selectedOption}
-            onChange={handleSelectChange}
-            className="min-h-10 min-w-52 border-2 border-gray-800 bg-gradient-dark-blue"
-          >
-            <option className="bg-slate-600" value="tasks">
-              Завдання
-            </option>
-            <option className="bg-slate-600" value="goals">
-              Цілі
-            </option>
-            <option className="bg-slate-600" value="all">
-              Усі
-            </option>
-          </select>
+        <TaskInfo type="task and goal" />
+        <select
+          value={selectedOption}
+          onChange={handleSelectChange}
+          className="min-h-10 min-w-52 border-2 border-gray-800 bg-gradient-dark-blue"
+        >
+          <option className="bg-slate-600" value="all">
+            All
+          </option>
+          <option className="bg-slate-600" value="tasks">
+            Task
+          </option>
+          <option className="bg-slate-600" value="goals">
+            Goal
+          </option>
+        </select>
+        <div className="flex flex-wrap flex-col gap-6">
           <MyBtn variant={"gradient"} onClick={modalProps.onOpen}>
             Create Task
           </MyBtn>
@@ -157,11 +140,7 @@ function TasksGoals() {
       ) : errorTask ? (
         <div>Помилка {errorTask?.message}</div>
       ) : (
-        <TaskList
-          tasks={displayedData}
-          onComplete={completeTask.mutate}
-          mode={isDeleteMode}
-        />
+        <TaskList tasks={displayedData} mode={isDeleteMode} />
       )}
     </div>
   );
