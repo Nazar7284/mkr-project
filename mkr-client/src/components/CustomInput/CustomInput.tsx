@@ -5,6 +5,7 @@ import { FieldConfig } from "../DynamicForm/DynamicForm";
 interface CustomInputProps extends FieldConfig {
   control: Control<FieldValues, any>;
   rules?: any;
+  color?: string;
 }
 
 const CustomInput: React.FC<CustomInputProps> = ({
@@ -13,8 +14,9 @@ const CustomInput: React.FC<CustomInputProps> = ({
   label,
   initialValue = "",
   rules,
-  type = "text", // За замовчуванням тип "text"
-  options = [], // За замовчуванням порожній масив для options
+  type = "text",
+  options = [],
+  color = "black",
 }) => {
   return (
     <Controller
@@ -24,7 +26,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       rules={rules}
       render={({ field, fieldState: { error } }) => (
         <div style={{ marginBottom: "16px" }}>
-          <label htmlFor={name} style={{ color: error ? "red" : "black" }}>
+          <label htmlFor={name} style={{ color: error ? "red" : color }}>
             {label}
           </label>
 

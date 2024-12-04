@@ -22,20 +22,26 @@ interface DynamicFormProps {
 
 const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
   const validationSchema = Yup.object(
-    fields.reduce((acc, field) => {
-      if (field.validation) {
-        acc[field.name] = field.validation;
-      }
-      return acc;
-    }, {} as Record<string, any>)
+    fields.reduce(
+      (acc, field) => {
+        if (field.validation) {
+          acc[field.name] = field.validation;
+        }
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   );
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(validationSchema),
-    defaultValues: fields.reduce((acc, field) => {
-      acc[field.name] = field.initialValue;
-      return acc;
-    }, {} as Record<string, any>),
+    defaultValues: fields.reduce(
+      (acc, field) => {
+        acc[field.name] = field.initialValue;
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   });
 
   const handleFormSubmit: SubmitHandler<any> = (data) => {
@@ -56,6 +62,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ fields, onSubmit }) => {
             initialValue={field.initialValue}
             type={field.type ?? "text"}
             options={field.options}
+            color={field.color}
           />
         ))}
       </div>

@@ -45,7 +45,6 @@ const Auth = () => {
   return (
     <div className="ml-16 flex h-full min-h-screen w-full flex-1 items-center justify-center bg-slate-600 px-14 py-8 text-white">
       <LoginModal {...loginModal} onComplete={() => {}} />
-      {/* <div className="flex flex-wrap gap-8 w-full h-full justify-center items-center p-4"></div> */}
       <div
         className={`transform-style-preserve-3d relative transition-transform duration-500 ${
           isFlipped ? "rotate-y-180" : ""
@@ -84,6 +83,7 @@ const LoginCard = ({
       name: "userName",
       label: "Username",
       initialValue: "",
+      color: "white",
       validation: Yup.string()
         .required("Username is required")
         .min(2, "Minimum 2 characters"),
@@ -92,6 +92,7 @@ const LoginCard = ({
       name: "password",
       label: "Password",
       initialValue: "",
+      color: "white",
       type: "password",
       validation: Yup.string()
         .required("Password is required")
@@ -128,17 +129,19 @@ const SignUpCard = ({
 }) => {
   const fields: FieldConfig[] = [
     {
-      name: "userName",
+      name: "RegisterUserName",
       label: "Username",
       initialValue: "",
+      color: "white",
       validation: Yup.string()
         .required("Username is required")
         .min(2, "Minimum 2 characters"),
     },
     {
-      name: "password",
+      name: "RegisterPassword",
       label: "Password",
       initialValue: "",
+      color: "white",
       type: "password",
       validation: Yup.string()
         .required("Password is required")
@@ -148,6 +151,7 @@ const SignUpCard = ({
       name: "confirmPassword",
       label: "Confirm Password",
       initialValue: "",
+      color: "white",
       type: "password",
       validation: Yup.string()
         .required("Confirm Password is required")

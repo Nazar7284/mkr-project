@@ -97,7 +97,9 @@ const CreateTaskModal: FC<CreateTaskModalProps> = ({
   return (
     <Modal {...props}>
       <div className="p-4">
-        <h2 className="text-lg font-semibold">Add Daily Task</h2>
+        <h2 className="text-lg font-semibold">
+          {type === "casual" ? "Add Task" : "Add Daily Task"}
+        </h2>
         <div>
           <DynamicForm fields={filteredFields} onSubmit={handleSubmitForm} />
         </div>

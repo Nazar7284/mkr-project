@@ -66,15 +66,15 @@ const GoalInfo = () => {
       .map((task) => ({ ...task, type: "task" })) || [];
 
   return (
-    <div className="flex-1 min-h-screen w-full h-full px-14 py-8 text-white ml-16 bg-slate-600 overflow-hidden">
-      <div className="flex gap-5 items-start justify-between flex-wrap border-b-2 border-gray-800 ">
+    <div className="ml-16 h-full min-h-screen w-full flex-1 overflow-hidden bg-slate-600 px-14 py-8 text-white">
+      <div className="flex flex-wrap items-center justify-between gap-5 border-b-2 border-gray-800">
         <Header
           title="Goal info"
           subtitle="Detailed information about a specific goal"
         />
         <button
           onClick={handleClickAi}
-          className="bg-gradient-dark-blue text-white font-bold px-2 py-4 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
+          className="bg-gradient-dark-blue rounded-lg px-2 py-4 font-bold text-white shadow-md transition-transform duration-300 hover:scale-105"
         >
           Get task from ai
         </button>
